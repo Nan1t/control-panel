@@ -4,7 +4,11 @@
 }
 
 .sb-link:hover {
-    background: rgba(255,255,255,0.1);
+    background: #247dff;
+}
+
+.sb-link.active {
+    background: #0d6efd !important;
 }
 
 .sb-link span {

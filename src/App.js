@@ -39,16 +39,8 @@ class App extends React.Component {
 class Panel extends React.Component {
     constructor(props) {
         super(props);
-
         let pages = new Map();
-        pages.set(0, <Home />);
-        pages.set(1, <General />);
-        pages.set(2, <Teachers />);
-        pages.set(3, <Consult />);
-        pages.set(4, <Courses />);
-        pages.set(5, <Rendering />);
-        pages.set(6, <Users />);
-        pages.set(7, <Sessions />);
+        this.setupPages(pages);
 
         this.state = {
             page: 0,
@@ -58,6 +50,17 @@ class Panel extends React.Component {
         this.setPage = this.setPage.bind(this);
     }
 
+    setupPages(pages) {
+        pages.set(0, <Home />);
+        pages.set(1, <General />);
+        pages.set(2, <Teachers />);
+        pages.set(3, <Consult />);
+        pages.set(4, <Courses />);
+        pages.set(5, <Rendering />);
+        pages.set(6, <Users />);
+        pages.set(7, <Sessions />);
+    }
+
     render() {
         let pageId = this.state.page;
         let page = this.state.pages.get(pageId);
@@ -65,7 +68,7 @@ class Panel extends React.Component {
         return (
             <div className="container-fluid bg-light">
                 <div className="row">
-                    <div className="col-2 vh-100 p-0 bg-dark text-white h-100">
+                    <div className="sticky-md-top col-sm-12 col-md-4 col-lg-2 vh-100 p-0 bg-dark text-white h-100">
                         <div className="dropdown m-2">
                             <button
                                 className="btn btn-secondary dropdown-toggle w-100"
@@ -81,18 +84,18 @@ class Panel extends React.Component {
                             </ul>
                         </div>
                         <div className="list-group">
-                            <Link text="Главная" icon="bi-house-fill" callback={() => this.setPage(0)}/>
-                            <Link text="Общие настройки" icon="bi-gear-fill" callback={() => this.setPage(1)}/>
-                            <Link text="Преподаватели" icon="bi-file-earmark-person-fill" callback={() => this.setPage(2)}/>
-                            <Link text="Консультации" icon="bi-chat-text-fill" callback={() => this.setPage(3)}/>
-                            <Link text="Курсы" icon="bi-people-fill" callback={() => this.setPage(4)}/>
-                            <Link text="Рендеринг" icon="bi-image-fill" callback={() => this.setPage(5)}/>
+                            <Link text="Главная" icon="bi-house-fill" callback={() => this.setPage(0)} active={pageId === 0}/>
+                            <Link text="Общие настройки" icon="bi-gear-fill" callback={() => this.setPage(1)} active={pageId === 1}/>
+                            <Link text="Преподаватели" icon="bi-file-earmark-person-fill" callback={() => this.setPage(2)} active={pageId === 2}/>
+                            <Link text="Консультации" icon="bi-chat-text-fill" callback={() => this.setPage(3)} active={pageId === 3}/>
+                            <Link text="Курсы" icon="bi-people-fill" callback={() => this.setPage(4)} active={pageId === 4}/>
+                            <Link text="Рендеринг" icon="bi-image-fill" callback={() => this.setPage(5)} active={pageId === 5}/>
                             <hr className="m-2"/>
-                            <Link text="Пользователи" icon="bi-person-fill" callback={() => this.setPage(6)}/>
-                            <Link text="Сессии" icon="bi-journal-text" callback={() => this.setPage(7)}/>
+                            <Link text="Пользователи" icon="bi-person-fill" callback={() => this.setPage(6) } active={pageId === 6}/>
+                            <Link text="Сессии" icon="bi-journal-text" callback={() => this.setPage(7)} active={pageId === 7}/>
                         </div>
                     </div>
-                    <div className="col-10">
+                    <div className="col-sm-12 col-md-8 col-lg-10">
                         {page}
                     </div>
                 </div>
@@ -106,8 +109,14 @@ class Panel extends React.Component {
 }
 
 function Link(props) {
+    let classes = "sb-link p-2";
+
+    if (props.active) {
+        classes += " active";
+    }
+
     return (
-        <div className="sb-link p-2" onClick={props.callback}>
+        <div className={classes} onClick={props.callback}>
             <i className={"bi " + props.icon}></i>
             <span>{props.text}</span>
         </div>
