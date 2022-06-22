@@ -9,39 +9,50 @@ class General extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            checkRate: 0,
-            dayIndexes: {
-                "Test": 0,
-                "hello": 1
+            data: {
+                checkRate: 0,
+                dayIndexes: {},
+                compAuds: [],
             },
-            compAuds: [],
+            saved: true,
+            addDayName: null,
+            addDayIndex: -1
         }
 
         this.addDay = this.addDay.bind(this);
-        this.remDay = this.remDay.bind(this);
+        this.save = this.save.bind(this);
     }
 
     componentDidMount() {
         axios.get(api("/properties")).then((resp) => {
-            this.setState(resp.data);
+            this.setState({data: resp.data});
         }).catch((e) => {
             console.log("Error: " + e);
         });
     }
 
     render() {
-        let days = [];
-        let keys = Object.keys(this.state.dayIndexes);
+        let spinnerClasses = "spinner-border ms-3";
 
-        for (let key in keys) {
-            let name = keys[key];
-            let index = this.state.dayIndexes[name];
-            days.push(<Day
+        if (this.state.saved) {
+            spinnerClasses += " visually-hidden";
+        }
+
+        let keys = Object.keys(this.state.data.dayIndexes);
+        let dayIndexes = [];
+
+        for (let i in keys) {
+            let name = keys[i];
+            let index = this.state.data.dayIndexes[name];
+            dayIndexes.push(<Day
+                key={i}
                 dayName={name}
                 dayIndex={index}
-                onRemove={()=>this.remDay(name)}
-                onNameChange={()=>{}}
-                onIndexChange={()=>{}}
+                onRemove={()=>{
+                    let data = this.state.data;
+                    delete data.dayIndexes[name];
+                    this.setState({data: data});
+                }}
             />);
         }
 
@@ -49,78 +60,116 @@ class General extends React.Component {
             <div className="container p-3">
                 <h2>Общие настройки</h2>
                 <div className="row">
-                    <div className="mb-3">
+                    <div className="mb-3 w-auto">
                         <label htmlFor="formRate" className="form-label">Период проверки</label>
                         <input type="number"
                                className="form-control"
                                id="formRate" aria-describedby="rateHelp"
-                               value={this.state.checkRate}
-                               onChange={(e) => this.setState({checkRate: e.target.value})}
+                               value={this.state.data.checkRate}
+                               onChange={(e) => {
+                                   let data = this.state.data;
+                                   data.checkRate = e.target.value;
+                                   this.setState({data: data});
+                               }}
                         />
                         <div id="rateHelp" className="form-text">Период проверки расписания в секундах</div>
                     </div>
                 </div>
                 <h3>Дни недели</h3>
-                <button className="btn btn-primary w-auto" onClick={this.addDay}>
-                    <i className="bi bi-plus-lg"></i>
-                    Добавить
-                </button>
-                <div className="row">
-                    <div className="col-6">
-                        <h6 className="text-center">День недели</h6>
+                <div className="row mb-3">
+                    <div className="col-8">
+                        <label htmlFor="dayName" className="form-label">Название дня</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="dayName"
+                            onChange={(e)=>{
+                                this.setState({addDayName: e.target.value});
+                            }}
+                        />
                     </div>
-                    <div className="col-5">
-                        <h6 className="text-center">Индекс</h6>
-                    </div>
-                    <div className="row">
-                        {days}
+                    <div className="col-4">
+                        <label htmlFor="dayIndex" className="form-label">Индекс</label>
+                        <input
+                            type="number"
+                            className="form-control"
+                            id="dayIndex"
+                            onChange={(e)=>{
+                                this.setState({addDayIndex: e.target.value});
+                            }}
+                        />
                     </div>
                 </div>
+                <button className="btn btn-primary" onClick={this.addDay}>Добавить</button>
                 <div className="row">
-                    <button className="btn btn-primary">Сохранить</button>
+                    <table className="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">День</th>
+                            <th scope="col">Индекс</th>
+                            <th scope="col">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {dayIndexes}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="row">
+                    <button className="btn btn-primary w-auto" onClick={this.save}>Сохранить</button>
+                    <div className={spinnerClasses} role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
         );
     }
 
     addDay() {
-        let days = this.state.dayIndexes;
+        let name = this.state.addDayName;
+        let index = this.state.addDayIndex;
 
-        if (days[""]) {
-            console.log("Exists");
-            return;
+        if (name != null && index > -1) {
+            let indexes = this.state.data.dayIndexes;
+
+            if (indexes[name] === undefined) {
+                indexes[name] = index;
+                let data = this.state.data;
+                data.dayIndexes = indexes;
+                this.setState({data: data});
+            }
         }
-
-        days[""] = -1;
-        this.setState({dayIndexes: days});
     }
 
-    remDay(dayName) {
-        let days = this.state.dayIndexes;
-        delete days[dayName];
-        this.setState({dayIndexes: days});
+    save() {
+        this.setState({saved: false});
+
+        axios.post(api("/properties"), this.state.data).then((resp) => {
+            this.setState({saved: true});
+
+            if (resp.data["success"] === true) {
+                console.log("Saved!");
+            } else {
+                console.log("Error!");
+            }
+        }).catch((e) => {
+            this.setState({saved: true});
+            console.log("Error: " + e);
+        });
     }
 }
 
 function Day(props) {
     return (
-        <div className="row">
-            <div className="col-6">
-                <div className="mb-3">
-                    <input type="text" className="form-control" value={props.dayName} onChange={props.onNameChange}/>
-                </div>
-            </div>
-            <div className="col-5">
-                <div className="mb-3">
-                    <input type="number" className="form-control" value={props.dayIndex} onChange={props.onIndexChange}/>
-                </div>
-            </div>
-            <div className="col-1">
+        <tr>
+            <td>{props.dayName}</td>
+            <td>{props.dayIndex}</td>
+            <td>
                 <button className="btn btn-danger" onClick={props.onRemove}>
                     <i className="bi bi-trash-fill"></i>
                 </button>
-            </div>
-        </div>
+            </td>
+        </tr>
     );
 }
 

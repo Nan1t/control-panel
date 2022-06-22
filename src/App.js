@@ -11,7 +11,6 @@ import General from "./pages/General";
 import Teachers from "./pages/Teachers";
 import Consult from "./pages/Consult";
 import Courses from "./pages/Courses";
-import Rendering from "./pages/Rendering";
 import Users from "./pages/Users";
 import Sessions from "./pages/Sessions";
 
@@ -56,7 +55,6 @@ class Panel extends React.Component {
         pages.set(2, <Teachers />);
         pages.set(3, <Consult />);
         pages.set(4, <Courses />);
-        pages.set(5, <Rendering />);
         pages.set(6, <Users />);
         pages.set(7, <Sessions />);
     }
@@ -89,7 +87,6 @@ class Panel extends React.Component {
                             <Link text="Преподаватели" icon="bi-file-earmark-person-fill" callback={() => this.setPage(2)} active={pageId === 2}/>
                             <Link text="Консультации" icon="bi-chat-text-fill" callback={() => this.setPage(3)} active={pageId === 3}/>
                             <Link text="Курсы" icon="bi-people-fill" callback={() => this.setPage(4)} active={pageId === 4}/>
-                            <Link text="Рендеринг" icon="bi-image-fill" callback={() => this.setPage(5)} active={pageId === 5}/>
                             <hr className="m-2"/>
                             <Link text="Пользователи" icon="bi-person-fill" callback={() => this.setPage(6) } active={pageId === 6}/>
                             <Link text="Сессии" icon="bi-journal-text" callback={() => this.setPage(7)} active={pageId === 7}/>
