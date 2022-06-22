@@ -1,6 +1,19 @@
-export function api(endpoint) {
-    let config = getConfig();
-    return config["api_url"] + endpoint;
+import {getApiToken} from "./storage";
+
+export function client() {
+    const config = getConfig();
+    const token = getApiToken();
+    let headers = {};
+
+    if (token != null) {
+        headers['Authorization'] = token;
+    }
+
+    return require('axios').create({
+        baseURL: config["api_url"],
+        params:{},
+        headers: headers
+    });
 }
 
 function getConfig() {

@@ -2,8 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import React from "react";
-import {default as axios} from "axios";
-import {api} from "../client";
+import {client} from "../client";
 
 class Home extends React.Component {
     constructor(props) {
@@ -19,7 +18,9 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        axios.get(api("/stats")).then((resp) => {
+        const cli = client();
+
+        cli.get("/stats").then((resp) => {
             this.setState(resp.data);
         }).catch((e) => {
             console.log("Error: " + e);
@@ -35,8 +36,8 @@ class Home extends React.Component {
         let subsPoints = this.state.subsPoints;
 
         let all = subsTeacher
-            + subsConsult
             + subsCourse
+            + subsConsult
             + subsGroup
             + subsPoints
 

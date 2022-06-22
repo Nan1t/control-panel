@@ -1,8 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from "react";
 import "./Login.css";
-import {api} from "./client";
-import {setApiToken} from "./storage";
+import {client} from "./client";
+import {setApiToken, setLogin, setAdmin} from "./storage";
 
 class Login extends React.Component {
     constructor(props) {
@@ -33,7 +33,7 @@ class Login extends React.Component {
                         <label htmlFor="fieldPassword" className="form-label">Пароль</label>
                         <input type="password" className="form-control" id="fieldPassword" onChange={this.inputPassword} />
                     </div>
-                    <input type="submit" className="btn btn-primary" value="Войти" onClick={this.login} />
+                    <input type="submit" className="btn btn-primary" value="Войти" />
                     <span className="text-danger">{this.state.error != null ? this.state.error : ""}</span>
                 </form>
             </div>
@@ -57,9 +57,9 @@ class Login extends React.Component {
 
         this.setState({error: null});
 
-        const axios = require('axios').default;
+        const cli = client();
 
-        axios.post(api("/login"), {
+        cli.post("/login", {
             login: login,
             password: password
         }).then((resp) => {
@@ -67,6 +67,8 @@ class Login extends React.Component {
 
             if (token) {
                 setApiToken(token);
+                setLogin(login);
+                setAdmin(resp.data["isAdmin"])
                 this.props.setToken(token)
             } else {
                 this.setError(resp.data["error"]);

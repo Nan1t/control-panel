@@ -2,8 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import React from "react";
-import {default as axios} from "axios";
-import {api} from "../client";
+import {client} from "../client";
 
 class Consult extends React.Component {
     constructor(props) {
@@ -26,7 +25,9 @@ class Consult extends React.Component {
     }
 
     componentDidMount() {
-        axios.get(api("/consult")).then((resp) => {
+        const cli = client();
+
+        cli.get("/consult").then((resp) => {
             this.setState({data: resp.data});
         }).catch((e) => {
             console.log("Error: " + e);
@@ -140,8 +141,9 @@ class Consult extends React.Component {
 
     save() {
         this.setState({saved: false});
+        const cli = client();
 
-        axios.post(api("/consult"), this.state.data).then((resp) => {
+        cli.post("/consult", this.state.data).then((resp) => {
             this.setState({saved: true});
 
             if (resp.data["success"] === true) {

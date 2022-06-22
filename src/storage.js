@@ -16,3 +16,11 @@ export function getLogin() {
 export function setLogin(login) {
     localStorage.setItem("apiLogin", login);
 }
+
+export function isAdmin() {
+    return localStorage.getItem("isAdmin");
+}
+
+export function setAdmin(isAdmin) {
+    localStorage.setItem("isAdmin", isAdmin);
+}

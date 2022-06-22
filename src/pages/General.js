@@ -2,8 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import React from "react";
-import {default as axios} from "axios";
-import {api} from "../client";
+import {client} from "../client";
 
 class General extends React.Component {
     constructor(props) {
@@ -24,7 +23,9 @@ class General extends React.Component {
     }
 
     componentDidMount() {
-        axios.get(api("/properties")).then((resp) => {
+        const cli = client();
+
+        cli.get("/properties").then((resp) => {
             this.setState({data: resp.data});
         }).catch((e) => {
             console.log("Error: " + e);
@@ -143,8 +144,9 @@ class General extends React.Component {
 
     save() {
         this.setState({saved: false});
+        const cli = client();
 
-        axios.post(api("/properties"), this.state.data).then((resp) => {
+        cli.post("/properties", this.state.data).then((resp) => {
             this.setState({saved: true});
 
             if (resp.data["success"] === true) {
