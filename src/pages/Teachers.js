@@ -9,7 +9,7 @@ class Teachers extends React.Component {
         super(props);
         this.state = {
             data: {
-                url: "https://nope.com",
+                url: "",
                 associations: {}
             },
             abbreviation: null,
@@ -139,6 +139,9 @@ class Teachers extends React.Component {
                 let data = this.state.data;
                 data.associations = assoc;
                 this.setState({data: data});
+                setTimeout(()=>{
+                    window.scrollTo(0, document.body.scrollHeight);
+                }, 100);
             }
         }
     }
